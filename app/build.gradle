@@ -15,13 +15,32 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.debug
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "TYPE", '"REAL"'
         }
+        fake {
+            versionNameSuffix "-fake"
+            buildConfigField "String", "TYPE", '"FAKE"'
+        }
+
+        realTest {
+            initWith release
+            versionNameSuffix "-test"
+            buildConfigField "String", "TYPE", '"REAL_TEST"'
+        }
+
+        fakeTest {
+            initWith fake
+            versionNameSuffix "-test"
+            buildConfigField "String", "TYPE", '"FAKE_TEST"'
+        }
+
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -33,20 +52,6 @@ android {
     testOptions {
         unitTests {
             includeAndroidResources = true
-        }
-    }
-
-    flavorDimensions "default"
-    productFlavors {
-        fake {
-            applicationIdSuffix ".fake"
-            versionNameSuffix "-fake"
-            buildConfigField "String", "TYPE", '"FAKE"'
-        }
-        real {
-            applicationIdSuffix ".real"
-            versionNameSuffix "-real"
-            buildConfigField "String", "TYPE", '"REAL"'
         }
     }
 }
