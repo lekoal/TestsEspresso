@@ -11,15 +11,17 @@ import com.geekbrains.tests.model.SearchResult
 import com.geekbrains.tests.presenter.RepositoryContract
 import com.geekbrains.tests.presenter.search.PresenterSearchContract
 import com.geekbrains.tests.presenter.search.SearchPresenter
-import com.geekbrains.tests.repository.FakeGitHubRepository
 import com.geekbrains.tests.view.details.DetailsActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import org.koin.android.ext.android.inject
+import org.koin.core.qualifier.named
 import java.util.*
 
 class MainActivity : AppCompatActivity(), ViewSearchContract {
 
     private val adapter = SearchResultAdapter()
-    private val presenter: PresenterSearchContract = SearchPresenter(this, createRepository())
+    private val repositoryContract: RepositoryContract by inject(named("fake_repo"))
+    private val presenter: PresenterSearchContract = SearchPresenter(this, repositoryContract)
     private var totalCount: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,10 +61,6 @@ class MainActivity : AppCompatActivity(), ViewSearchContract {
             }
             false
         })
-    }
-
-    private fun createRepository(): RepositoryContract {
-        return FakeGitHubRepository()
     }
 
     override fun displaySearchResults(
