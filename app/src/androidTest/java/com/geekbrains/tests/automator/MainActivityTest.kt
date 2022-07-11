@@ -10,8 +10,7 @@ import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
 import com.geekbrains.tests.test.BuildConfig
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -48,8 +47,9 @@ class MainActivityTest {
         val button = uiDevice.findObject(By.res(packageName, "searchButton"))
         editText.text = "opel"
         button.click()
-        uiDevice.wait(Until.hasObject(By.res(packageName, "totalCountTextView")), TIMEOUT)
-        val textView = uiDevice.findObject(By.res(packageName, "totalCountTextView"))
+        val textView = uiDevice.wait(
+            Until.findObject(By.res(packageName, "totalCountTextView")), TIMEOUT
+        )
         if (BuildConfig.FLAVOR == "fake") {
             assertEquals(textView.text, "Number of results: 42")
         } else {
@@ -86,13 +86,23 @@ class MainActivityTest {
         )
         editText.text = "opel"
         searchButton.click()
-        uiDevice.wait(Until.hasObject(By.res(packageName, "totalCountTextView")), TIMEOUT)
-        val mainText = uiDevice.findObject(By.res(packageName, "totalCountTextView")).text
+
+        val mainText = uiDevice.wait(
+            Until.findObject(By.res(packageName, "totalCountTextView")), TIMEOUT
+        ).text
         toDetailsButton.click()
         uiDevice.wait(Until.hasObject(By.res(packageName, "decrementButton")), TIMEOUT)
-        val detailsText = uiDevice.findObject(By.res(packageName, "totalCountTextView")).text
+        val detailsText = uiDevice.findObject(
+            By.res(packageName, "totalCountTextView")
+        ).text
         assertEquals(detailsText, mainText)
     }
 
-
+    @Test
+    fun editText_EmptyFieldCheck() {
+        val searchButton = uiDevice.findObject(By.res(packageName, "searchButton"))
+        searchButton.click()
+        val mainText = uiDevice.findObject(By.res(packageName, "totalCountTextView"))
+        assertNull(mainText)
+    }
 }
