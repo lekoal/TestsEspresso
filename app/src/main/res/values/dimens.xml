@@ -2,4 +2,5 @@
 <resources>
     <dimen name="list_item_padding">16dp</dimen>
     <dimen name="margin">16dp</dimen>
+    <dimen name="search_button_hmargin">5dp</dimen>
 </resources>

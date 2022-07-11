@@ -17,7 +17,7 @@
 
     <EditText
         android:id="@+id/searchEditText"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/search_hint"
         android:imeOptions="actionSearch"
@@ -25,7 +25,20 @@
         android:maxLines="1"
         android:singleLine="true"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toStartOf="@id/searchButton"
+        app:layout_constraintTop_toTopOf="parent"
+        android:importantForAutofill="no" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginHorizontal="@dimen/search_button_hmargin"
+        app:layout_constraintStart_toEndOf="@id/searchEditText"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="@string/search_text"
+        android:id="@+id/searchButton"
+        />
 
     <Button
         android:id="@+id/toDetailsActivityButton"
