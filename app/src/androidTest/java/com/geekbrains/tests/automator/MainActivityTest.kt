@@ -10,6 +10,7 @@ import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
 import com.geekbrains.tests.test.BuildConfig
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
@@ -45,12 +46,14 @@ class MainActivityTest {
     fun search_IsWorking() {
         val editText = uiDevice.findObject(By.res(packageName, "searchEditText"))
         val button = uiDevice.findObject(By.res(packageName, "searchButton"))
-        editText.text = ""
+        editText.text = "opel"
         button.click()
+        uiDevice.wait(Until.hasObject(By.res(packageName, "totalCountTextView")), TIMEOUT)
+        val textView = uiDevice.findObject(By.res(packageName, "totalCountTextView"))
         if (BuildConfig.FLAVOR == "fake") {
-
+            assertEquals(textView.text, "Number of results: 42")
         } else {
-
+            assertEquals(textView.text, "Number of results: 291")
         }
     }
 }
