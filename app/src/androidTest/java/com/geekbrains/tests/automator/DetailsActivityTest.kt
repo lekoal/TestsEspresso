@@ -11,6 +11,7 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
 import com.geekbrains.tests.test.BuildConfig
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -45,6 +46,12 @@ class DetailsActivityTest {
 
     companion object {
         private const val TIMEOUT = 5000L
+    }
+
+    @Test
+    fun detailsActivity_IsStarted() {
+        val decrementButton = uiDevice.findObject(By.res(packageName, "decrementButton"))
+        assertNotNull(decrementButton)
     }
 
     @Test
@@ -96,5 +103,4 @@ class DetailsActivityTest {
             assertEquals(detailsText.text, "Number of results: 292")
         }
     }
-
 }
