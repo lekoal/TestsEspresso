@@ -56,4 +56,43 @@ class MainActivityTest {
             assertEquals(textView.text, "Number of results: 291")
         }
     }
+
+    @Test
+    fun editText_TextChanging() {
+        val editText = uiDevice.findObject(By.res(packageName, "searchEditText"))
+        val testText = "test text"
+        editText.text = testText
+        assertEquals(editText.text, testText)
+    }
+
+    @Test
+    fun searchButton_TextCheck() {
+        val button = uiDevice.findObject(By.res(packageName, "searchButton"))
+        assertEquals(button.text, "SEARCH")
+    }
+
+    @Test
+    fun toDetailsButton_TextCheck() {
+        val button = uiDevice.findObject(By.res(packageName, "toDetailsActivityButton"))
+        assertEquals(button.text, "TO DETAILS")
+    }
+
+    @Test
+    fun detailsActivity_CorrectOpening() {
+        val editText = uiDevice.findObject(By.res(packageName, "searchEditText"))
+        val searchButton = uiDevice.findObject(By.res(packageName, "searchButton"))
+        val toDetailsButton = uiDevice.findObject(
+            By.res(packageName, "toDetailsActivityButton")
+        )
+        editText.text = "opel"
+        searchButton.click()
+        uiDevice.wait(Until.hasObject(By.res(packageName, "totalCountTextView")), TIMEOUT)
+        val mainText = uiDevice.findObject(By.res(packageName, "totalCountTextView")).text
+        toDetailsButton.click()
+        uiDevice.wait(Until.hasObject(By.res(packageName, "decrementButton")), TIMEOUT)
+        val detailsText = uiDevice.findObject(By.res(packageName, "totalCountTextView")).text
+        assertEquals(detailsText, mainText)
+    }
+
+
 }
