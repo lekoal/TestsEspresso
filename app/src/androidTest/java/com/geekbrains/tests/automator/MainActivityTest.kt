@@ -1,5 +1,7 @@
 package com.geekbrains.tests.automator
 
+import FAKE_FLAVOR
+import FAKE_SEARCH_TEXT
 import FAKE_TEST_NUMBER
 import REAL_DEFAULT_ZERO_TEST_NUMBER
 import TIMEOUT
@@ -49,7 +51,7 @@ class MainActivityTest {
         val textView = uiDevice.wait(
             Until.findObject(By.res(packageName, "totalCountTextView")), TIMEOUT
         )
-        if (BuildConfig.FLAVOR == "fake") {
+        if (BuildConfig.FLAVOR == FAKE_FLAVOR) {
             assertEquals(textView.text, FAKE_TEST_NUMBER)
         } else {
             assertEquals(textView.text, "Number of results: 292")
@@ -81,12 +83,23 @@ class MainActivityTest {
         val toDetailsButton = uiDevice.findObject(
             By.res(packageName, "toDetailsActivityButton")
         )
+        if (BuildConfig.FLAVOR == FAKE_FLAVOR) {
+            val editText = uiDevice.findObject(By.res(packageName, "searchEditText"))
+            val searchButton = uiDevice.findObject(By.res(packageName, "searchButton"))
+            editText.text = FAKE_SEARCH_TEXT
+            searchButton.click()
+            uiDevice.wait(
+                Until.findObject(
+                    By.res(packageName, "totalCountTextView")
+                ), TIMEOUT
+            )
+        }
         toDetailsButton.click()
         uiDevice.wait(Until.hasObject(By.res(packageName, "decrementButton")), TIMEOUT)
         val detailsText = uiDevice.findObject(
             By.res(packageName, "totalCountTextView")
         ).text
-        if (BuildConfig.FLAVOR == "fake") {
+        if (BuildConfig.FLAVOR == FAKE_FLAVOR) {
             assertEquals(detailsText, FAKE_TEST_NUMBER)
         } else {
             assertEquals(detailsText, REAL_DEFAULT_ZERO_TEST_NUMBER)

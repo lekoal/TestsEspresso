@@ -1,5 +1,7 @@
 package com.geekbrains.tests.automator
 
+import FAKE_FLAVOR
+import FAKE_SEARCH_TEXT
 import FAKE_TEST_NUMBER
 import FAKE_TEST_NUMBER_DECREMENT
 import FAKE_TEST_NUMBER_INCREMENT
@@ -42,6 +44,14 @@ class DetailsActivityTest {
         val detailsButton = uiDevice.findObject(
             By.res(packageName, "toDetailsActivityButton")
         )
+        if (BuildConfig.FLAVOR == FAKE_FLAVOR) {
+            val editText = uiDevice.findObject(By.res(packageName, "searchEditText"))
+            val searchButton = uiDevice.findObject(By.res(packageName, "searchButton"))
+            editText.text = FAKE_SEARCH_TEXT
+            searchButton.click()
+            uiDevice.wait(Until.findObject(
+                By.res(packageName, "totalCountTextView")), TIMEOUT)
+        }
         detailsButton.click()
         uiDevice.wait(Until.hasObject(By.res(packageName, "decrementButton")), TIMEOUT)
     }
@@ -57,7 +67,7 @@ class DetailsActivityTest {
         val detailsText = uiDevice.findObject(
             By.res(packageName, "totalCountTextView")
         ).text
-        if (BuildConfig.FLAVOR == "fake") {
+        if (BuildConfig.FLAVOR == FAKE_FLAVOR) {
             assertEquals(detailsText, FAKE_TEST_NUMBER)
         } else {
             assertEquals(detailsText, REAL_DEFAULT_ZERO_TEST_NUMBER)
@@ -70,13 +80,13 @@ class DetailsActivityTest {
             By.res(packageName, "totalCountTextView")
         )
         val decrementButton = uiDevice.findObject(By.res(packageName, "decrementButton"))
-        if (BuildConfig.FLAVOR == "fake") {
+        if (BuildConfig.FLAVOR == FAKE_FLAVOR) {
             assertEquals(detailsText.text, FAKE_TEST_NUMBER)
         } else {
             assertEquals(detailsText.text, REAL_DEFAULT_ZERO_TEST_NUMBER)
         }
         decrementButton.click()
-        if (BuildConfig.FLAVOR == "fake") {
+        if (BuildConfig.FLAVOR == FAKE_FLAVOR) {
             assertEquals(detailsText.text, FAKE_TEST_NUMBER_DECREMENT)
         } else {
             assertEquals(detailsText.text, REAL_DEFAULT_ZERO_TEST_DECREMENT)
@@ -89,13 +99,13 @@ class DetailsActivityTest {
             By.res(packageName, "totalCountTextView")
         )
         val incrementButton = uiDevice.findObject(By.res(packageName, "incrementButton"))
-        if (BuildConfig.FLAVOR == "fake") {
+        if (BuildConfig.FLAVOR == FAKE_FLAVOR) {
             assertEquals(detailsText.text, FAKE_TEST_NUMBER)
         } else {
             assertEquals(detailsText.text, REAL_DEFAULT_ZERO_TEST_NUMBER)
         }
         incrementButton.click()
-        if (BuildConfig.FLAVOR == "fake") {
+        if (BuildConfig.FLAVOR == FAKE_FLAVOR) {
             assertEquals(detailsText.text, FAKE_TEST_NUMBER_INCREMENT)
         } else {
             assertEquals(detailsText.text, REAL_DEFAULT_ZERO_TEST_NUMBER_INCREMENT)
