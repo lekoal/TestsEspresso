@@ -1,5 +1,6 @@
 package com.geekbrains.tests.automator
 
+import FAKE_TEST_NUMBER
 import REAL_DEFAULT_ZERO_TEST_NUMBER
 import android.content.Context
 import android.content.Intent
@@ -44,15 +45,17 @@ class MainActivityTest {
 
     @Test
     fun search_IsWorking() {
+        val editText = uiDevice.findObject(By.res(packageName, "searchEditText"))
         val button = uiDevice.findObject(By.res(packageName, "searchButton"))
+        editText.text = "opel"
         button.click()
         val textView = uiDevice.wait(
             Until.findObject(By.res(packageName, "totalCountTextView")), TIMEOUT
         )
         if (BuildConfig.FLAVOR == "fake") {
-            assertEquals(textView.text, "Number of results: 42")
+            assertEquals(textView.text, FAKE_TEST_NUMBER)
         } else {
-            assertEquals(textView.text, REAL_DEFAULT_ZERO_TEST_NUMBER)
+            assertEquals(textView.text, "Number of results: 292")
         }
     }
 
@@ -78,23 +81,20 @@ class MainActivityTest {
 
     @Test
     fun detailsActivity_CorrectOpening() {
-        val editText = uiDevice.findObject(By.res(packageName, "searchEditText"))
-        val searchButton = uiDevice.findObject(By.res(packageName, "searchButton"))
         val toDetailsButton = uiDevice.findObject(
             By.res(packageName, "toDetailsActivityButton")
         )
-        editText.text = "opel"
-        searchButton.click()
-
-        val mainText = uiDevice.wait(
-            Until.findObject(By.res(packageName, "totalCountTextView")), TIMEOUT
-        ).text
         toDetailsButton.click()
         uiDevice.wait(Until.hasObject(By.res(packageName, "decrementButton")), TIMEOUT)
         val detailsText = uiDevice.findObject(
             By.res(packageName, "totalCountTextView")
         ).text
-        assertEquals(detailsText, mainText)
+        if (BuildConfig.FLAVOR == "fake") {
+            assertEquals(detailsText, FAKE_TEST_NUMBER)
+        } else {
+            assertEquals(detailsText, REAL_DEFAULT_ZERO_TEST_NUMBER)
+        }
+
     }
 
     @Test
