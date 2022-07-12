@@ -1,5 +1,6 @@
 package com.geekbrains.tests.automator
 
+import REAL_DEFAULT_ZERO_TEST_NUMBER
 import android.content.Context
 import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
@@ -43,9 +44,7 @@ class MainActivityTest {
 
     @Test
     fun search_IsWorking() {
-        val editText = uiDevice.findObject(By.res(packageName, "searchEditText"))
         val button = uiDevice.findObject(By.res(packageName, "searchButton"))
-        editText.text = "opel"
         button.click()
         val textView = uiDevice.wait(
             Until.findObject(By.res(packageName, "totalCountTextView")), TIMEOUT
@@ -53,7 +52,7 @@ class MainActivityTest {
         if (BuildConfig.FLAVOR == "fake") {
             assertEquals(textView.text, "Number of results: 42")
         } else {
-            assertEquals(textView.text, "Number of results: 291")
+            assertEquals(textView.text, REAL_DEFAULT_ZERO_TEST_NUMBER)
         }
     }
 
