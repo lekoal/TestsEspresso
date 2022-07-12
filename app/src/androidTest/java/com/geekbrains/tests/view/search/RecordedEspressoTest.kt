@@ -24,52 +24,52 @@ class RecordedEspressoTest {
 
     @Test
     fun recordedEspressoTest() {
-        val appCompatEditText = onView(
+        onView(
             allOf(
                 withId(R.id.searchEditText),
                 isDisplayed()
             )
         )
-        appCompatEditText.perform(click())
+            .perform(click())
 
-        val appCompatEditText2 = onView(
+        onView(
             allOf(
                 withId(R.id.searchEditText),
                 isDisplayed()
             )
         )
-        appCompatEditText2.perform(replaceText("testing"), closeSoftKeyboard())
+            .perform(replaceText("testing"), closeSoftKeyboard())
 
-        val materialButton = onView(
+        onView(
             allOf(
                 withId(R.id.searchButton), withText("search"),
                 isDisplayed()
             )
         )
-        materialButton.perform(click())
+            .perform(click())
 
-        val materialButton2 = onView(
+        onView(
             allOf(
                 withId(R.id.toDetailsActivityButton), withText("to details"),
                 isDisplayed()
             )
         )
-        materialButton2.perform(click())
+            .perform(click())
 
-        val materialButton3 = onView(
+        onView(
             allOf(
                 withId(R.id.incrementButton), withText("+"),
                 isDisplayed()
             )
         )
-        materialButton3.perform(click())
+            .perform(click())
 
-        val textView = onView(
+        onView(
             allOf(
                 withId(R.id.totalCountTextView), withText("Number of results: 43"),
                 isDisplayed()
             )
         )
-        textView.check(matches(withText("Number of results: 43")))
+            .check(matches(withText("Number of results: 43")))
     }
 }
