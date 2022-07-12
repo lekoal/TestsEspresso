@@ -1,5 +1,12 @@
 package com.geekbrains.tests.automator
 
+import FAKE_TEST_NUMBER
+import FAKE_TEST_NUMBER_DECREMENT
+import FAKE_TEST_NUMBER_INCREMENT
+import REAL_DEFAULT_ZERO_TEST_DECREMENT
+import REAL_DEFAULT_ZERO_TEST_NUMBER
+import REAL_DEFAULT_ZERO_TEST_NUMBER_INCREMENT
+import TIMEOUT
 import android.content.Context
 import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
@@ -32,20 +39,11 @@ class DetailsActivityTest {
         intent!!.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         context.startActivity(intent)
         uiDevice.wait(Until.hasObject(By.pkg(packageName).depth(0)), TIMEOUT)
-        val editText = uiDevice.findObject(By.res(packageName, "searchEditText"))
-        val searchButton = uiDevice.findObject(By.res(packageName, "searchButton"))
         val detailsButton = uiDevice.findObject(
             By.res(packageName, "toDetailsActivityButton")
         )
-        editText.text = "opel"
-        searchButton.click()
-        uiDevice.wait(Until.hasObject(By.res(packageName, "totalCountTextView")), TIMEOUT)
         detailsButton.click()
         uiDevice.wait(Until.hasObject(By.res(packageName, "decrementButton")), TIMEOUT)
-    }
-
-    companion object {
-        private const val TIMEOUT = 5000L
     }
 
     @Test
@@ -60,9 +58,9 @@ class DetailsActivityTest {
             By.res(packageName, "totalCountTextView")
         ).text
         if (BuildConfig.FLAVOR == "fake") {
-            assertEquals(detailsText, "Number of results: 42")
+            assertEquals(detailsText, FAKE_TEST_NUMBER)
         } else {
-            assertEquals(detailsText, "Number of results: 291")
+            assertEquals(detailsText, REAL_DEFAULT_ZERO_TEST_NUMBER)
         }
     }
 
@@ -73,15 +71,15 @@ class DetailsActivityTest {
         )
         val decrementButton = uiDevice.findObject(By.res(packageName, "decrementButton"))
         if (BuildConfig.FLAVOR == "fake") {
-            assertEquals(detailsText.text, "Number of results: 42")
+            assertEquals(detailsText.text, FAKE_TEST_NUMBER)
         } else {
-            assertEquals(detailsText.text, "Number of results: 291")
+            assertEquals(detailsText.text, REAL_DEFAULT_ZERO_TEST_NUMBER)
         }
         decrementButton.click()
         if (BuildConfig.FLAVOR == "fake") {
-            assertEquals(detailsText.text, "Number of results: 41")
+            assertEquals(detailsText.text, FAKE_TEST_NUMBER_DECREMENT)
         } else {
-            assertEquals(detailsText.text, "Number of results: 290")
+            assertEquals(detailsText.text, REAL_DEFAULT_ZERO_TEST_DECREMENT)
         }
     }
 
@@ -92,15 +90,15 @@ class DetailsActivityTest {
         )
         val incrementButton = uiDevice.findObject(By.res(packageName, "incrementButton"))
         if (BuildConfig.FLAVOR == "fake") {
-            assertEquals(detailsText.text, "Number of results: 42")
+            assertEquals(detailsText.text, FAKE_TEST_NUMBER)
         } else {
-            assertEquals(detailsText.text, "Number of results: 291")
+            assertEquals(detailsText.text, REAL_DEFAULT_ZERO_TEST_NUMBER)
         }
         incrementButton.click()
         if (BuildConfig.FLAVOR == "fake") {
-            assertEquals(detailsText.text, "Number of results: 43")
+            assertEquals(detailsText.text, FAKE_TEST_NUMBER_INCREMENT)
         } else {
-            assertEquals(detailsText.text, "Number of results: 292")
+            assertEquals(detailsText.text, REAL_DEFAULT_ZERO_TEST_NUMBER_INCREMENT)
         }
     }
 }

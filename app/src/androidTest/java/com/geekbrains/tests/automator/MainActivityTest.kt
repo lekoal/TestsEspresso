@@ -2,6 +2,7 @@ package com.geekbrains.tests.automator
 
 import FAKE_TEST_NUMBER
 import REAL_DEFAULT_ZERO_TEST_NUMBER
+import TIMEOUT
 import android.content.Context
 import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
@@ -31,10 +32,6 @@ class MainActivityTest {
         intent!!.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         context.startActivity(intent)
         uiDevice.wait(Until.hasObject(By.pkg(packageName).depth(0)), TIMEOUT)
-    }
-
-    companion object {
-        private const val TIMEOUT = 5000L
     }
 
     @Test
