@@ -1,8 +1,8 @@
 package com.geekbrains.tests.automator
 
 import FAKE_FLAVOR
-import FAKE_SEARCH_TEXT
 import FAKE_TEST_NUMBER
+import FakeDataSetup
 import REAL_DEFAULT_ZERO_TEST_NUMBER
 import TIMEOUT
 import android.content.Context
@@ -84,15 +84,7 @@ class MainActivityTest {
             By.res(packageName, "toDetailsActivityButton")
         )
         if (BuildConfig.FLAVOR == FAKE_FLAVOR) {
-            val editText = uiDevice.findObject(By.res(packageName, "searchEditText"))
-            val searchButton = uiDevice.findObject(By.res(packageName, "searchButton"))
-            editText.text = FAKE_SEARCH_TEXT
-            searchButton.click()
-            uiDevice.wait(
-                Until.findObject(
-                    By.res(packageName, "totalCountTextView")
-                ), TIMEOUT
-            )
+            FakeDataSetup(uiDevice, context)
         }
         toDetailsButton.click()
         uiDevice.wait(Until.hasObject(By.res(packageName, "decrementButton")), TIMEOUT)
