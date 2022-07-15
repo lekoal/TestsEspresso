@@ -1,5 +1,10 @@
 package com.geekbrains.tests.automator
 
+import FAKE_FLAVOR
+import FAKE_TEST_NUMBER
+import FakeDataSetup
+import REAL_DEFAULT_ZERO_TEST_NUMBER
+import TIMEOUT
 import android.content.Context
 import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
@@ -31,10 +36,6 @@ class MainActivityTest {
         uiDevice.wait(Until.hasObject(By.pkg(packageName).depth(0)), TIMEOUT)
     }
 
-    companion object {
-        private const val TIMEOUT = 5000L
-    }
-
     @Test
     fun mainActivity_IsStarted() {
         val editText = uiDevice.findObject(By.res(packageName, "searchEditText"))
@@ -50,10 +51,10 @@ class MainActivityTest {
         val textView = uiDevice.wait(
             Until.findObject(By.res(packageName, "totalCountTextView")), TIMEOUT
         )
-        if (BuildConfig.FLAVOR == "fake") {
-            assertEquals(textView.text, "Number of results: 42")
+        if (BuildConfig.FLAVOR == FAKE_FLAVOR) {
+            assertEquals(textView.text, FAKE_TEST_NUMBER)
         } else {
-            assertEquals(textView.text, "Number of results: 291")
+            assertEquals(textView.text, "Number of results: 292")
         }
     }
 
@@ -79,23 +80,23 @@ class MainActivityTest {
 
     @Test
     fun detailsActivity_CorrectOpening() {
-        val editText = uiDevice.findObject(By.res(packageName, "searchEditText"))
-        val searchButton = uiDevice.findObject(By.res(packageName, "searchButton"))
         val toDetailsButton = uiDevice.findObject(
             By.res(packageName, "toDetailsActivityButton")
         )
-        editText.text = "opel"
-        searchButton.click()
-
-        val mainText = uiDevice.wait(
-            Until.findObject(By.res(packageName, "totalCountTextView")), TIMEOUT
-        ).text
+        if (BuildConfig.FLAVOR == FAKE_FLAVOR) {
+            FakeDataSetup(uiDevice, context)
+        }
         toDetailsButton.click()
         uiDevice.wait(Until.hasObject(By.res(packageName, "decrementButton")), TIMEOUT)
         val detailsText = uiDevice.findObject(
             By.res(packageName, "totalCountTextView")
         ).text
-        assertEquals(detailsText, mainText)
+        if (BuildConfig.FLAVOR == FAKE_FLAVOR) {
+            assertEquals(detailsText, FAKE_TEST_NUMBER)
+        } else {
+            assertEquals(detailsText, REAL_DEFAULT_ZERO_TEST_NUMBER)
+        }
+
     }
 
     @Test
