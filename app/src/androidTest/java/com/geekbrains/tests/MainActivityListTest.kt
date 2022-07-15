@@ -56,7 +56,7 @@ class MainActivityListTest {
     }
 
     @Test
-    fun mainActivity_testClickAtPosition() {
+    fun mainActivity_testClickAtFirstPosition() {
         if (BuildConfig.FLAVOR == "real") {
             onView(withId(R.id.searchEditText)).perform(click())
             onView(withId(R.id.searchEditText)).perform(
@@ -75,7 +75,63 @@ class MainActivityListTest {
         }
     }
 
+    @Test
+    fun mainActivity_testClickAtHiddenPosition() {
+        if (BuildConfig.FLAVOR == "real") {
+            onView(withId(R.id.searchEditText)).perform(click())
+            onView(withId(R.id.searchEditText)).perform(
+                replaceText("tts"),
+                closeSoftKeyboard()
+            )
+            onView(withId(R.id.searchButton)).perform(click())
+            onView(isRoot()).perform(delay())
+            onView(withId(R.id.recyclerView)).perform(
+                RecyclerViewActions.scrollTo<SearchResultAdapter.SearchResultViewHolder>(
+                    hasDescendant(withText("petercunha/tts"))
+                )
+            )
+            onView(withId(R.id.recyclerView)).perform(
+                RecyclerViewActions.actionOnItem<SearchResultAdapter.SearchResultViewHolder>(
+                    hasDescendant(withText("jscrane/TTS")),
+                    click()
+                )
+            )
+        }
+    }
 
+    private fun tapOnId(id: Int) = object : ViewAction {
+        override fun getConstraints(): Matcher<View>? {
+            return null
+        }
+
+        override fun getDescription(): String {
+            return "Нажатие на view с id: $id"
+        }
+
+        override fun perform(uiController: UiController, view: View) {
+            val v = view.findViewById(id) as View
+            v.performClick()
+        }
+    }
+
+    @Test
+    fun mainActivity_testCustomClick() {
+        if (BuildConfig.FLAVOR == "real") {
+            onView(withId(R.id.searchEditText)).perform(click())
+            onView(withId(R.id.searchEditText)).perform(
+                replaceText("tts"),
+                closeSoftKeyboard()
+            )
+            onView(withId(R.id.searchButton)).perform(click())
+            onView(isRoot()).perform(delay())
+            onView(withId(R.id.recyclerView)).perform(
+                RecyclerViewActions.actionOnItem<SearchResultAdapter.SearchResultViewHolder>(
+                    hasDescendant(withText("jscrane/TTS")),
+                    tapOnId(R.id.repositoryName)
+                )
+            )
+        }
+    }
 
     @After
     fun close() {
