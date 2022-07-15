@@ -41,8 +41,10 @@ class MainActivityListTest {
     fun mainActivity_testScrollTo() {
         if (BuildConfig.FLAVOR == "real") {
             onView(withId(R.id.searchEditText)).perform(click())
-            onView(withId(R.id.searchEditText)).perform(replaceText("tts"),
-            closeSoftKeyboard())
+            onView(withId(R.id.searchEditText)).perform(
+                replaceText("tts"),
+                closeSoftKeyboard()
+            )
             onView(withId(R.id.searchButton)).perform(click())
             onView(isRoot()).perform(delay())
             onView(withId(R.id.recyclerView)).perform(
@@ -52,6 +54,28 @@ class MainActivityListTest {
             )
         }
     }
+
+    @Test
+    fun mainActivity_testClickAtPosition() {
+        if (BuildConfig.FLAVOR == "real") {
+            onView(withId(R.id.searchEditText)).perform(click())
+            onView(withId(R.id.searchEditText)).perform(
+                replaceText("tts"),
+                closeSoftKeyboard()
+            )
+            onView(withId(R.id.searchButton)).perform(click())
+            onView(isRoot()).perform(delay())
+            onView(withId(R.id.recyclerView)).perform(
+                RecyclerViewActions
+                    .actionOnItemAtPosition<SearchResultAdapter.SearchResultViewHolder>(
+                        0,
+                        click()
+                    )
+            )
+        }
+    }
+
+
 
     @After
     fun close() {
