@@ -6,6 +6,7 @@ plugins {
 
 android {
     compileSdkVersion 32
+    buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "com.geekbrains.tests"
@@ -15,14 +16,21 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.debug
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "TYPE", '"RELEASE"'
+        }
+        debug {
+            versionNameSuffix "-debug"
+            buildConfigField "String", "TYPE", '"DEBUG"'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -35,20 +43,27 @@ android {
             includeAndroidResources = true
         }
     }
-
-    flavorDimensions "default"
+    flavorDimensions 'version'
     productFlavors {
-        fake {
-            applicationIdSuffix ".fake"
-            versionNameSuffix "-fake"
-            buildConfigField "String", "TYPE", '"FAKE"'
-        }
         real {
-            applicationIdSuffix ".real"
-            versionNameSuffix "-real"
-            buildConfigField "String", "TYPE", '"REAL"'
+            dimension 'version'
+            versionNameSuffix '.real'
+        }
+        fake {
+            dimension 'version'
+            versionNameSuffix '.fake'
         }
     }
+
+    sourceSets {
+        main { java.srcDirs = ['src/main/java'] }
+        test { java.srcDirs = ['src/test/java'] }
+        androidTest {
+            java.srcDirs = ['src/androidTest/java']
+            java.srcDirs += "src/androidTest/java/sharedData"
+        }
+    }
+
 }
 
 dependencies {
@@ -79,4 +94,10 @@ dependencies {
     testImplementation 'androidx.test.ext:truth:1.4.0'
     testImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     testImplementation 'androidx.test.espresso:espresso-intents:3.4.0'
+
+    //Koin
+    implementation "io.insert-koin:koin-android:3.2.0"
+
+    //UI Automator
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
 }
