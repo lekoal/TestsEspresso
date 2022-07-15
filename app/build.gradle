@@ -6,6 +6,7 @@ plugins {
 
 android {
     compileSdkVersion 32
+    buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "com.geekbrains.tests"
@@ -54,10 +55,13 @@ android {
         }
     }
 
-    sourceSets{
+    sourceSets {
         main { java.srcDirs = ['src/main/java'] }
         test { java.srcDirs = ['src/test/java'] }
-        androidTest { java.srcDirs = ['src/androidTest/java'] }
+        androidTest {
+            java.srcDirs = ['src/androidTest/java']
+            java.srcDirs += "src/androidTest/java/sharedData"
+        }
     }
 
 }
@@ -93,4 +97,7 @@ dependencies {
 
     //Koin
     implementation "io.insert-koin:koin-android:3.2.0"
+
+    //UI Automator
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
 }
