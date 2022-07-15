@@ -36,7 +36,6 @@ class MainActivity : AppCompatActivity(), ViewSearchContract {
                 .replace(mainContainer.id,
                 DetailsFragment.newInstance(totalCount))
                 .commit()
-//            startActivity(DetailsActivity.getIntent(this, totalCount))
         }
         setQueryListener()
         setRecyclerView()
