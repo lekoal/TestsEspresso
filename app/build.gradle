@@ -107,4 +107,7 @@ dependencies {
 
     //Fragment testing
     debugImplementation 'androidx.fragment:fragment-testing:1.5.0'
+
+    //RecyclerView testing
+    debugImplementation 'androidx.test.espresso:espresso-contrib:3.4.0'
 }
