@@ -5,14 +5,15 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.geekbrains.tests.model.SearchResponse
-import com.geekbrains.tests.presenter.stubs.ScheduleProviderStub
 import com.geekbrains.tests.repository.GitHubRepository
 import com.geekbrains.tests.viewmodel.search.ScreenState
 import com.geekbrains.tests.viewmodel.search.SearchViewModel
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import io.reactivex.Observable
-import org.junit.Assert.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -29,6 +30,10 @@ class SearchViewModelTest {
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @get:Rule
+    var testCoroutineRule = TestCoroutineRule()
+
     private lateinit var searchViewModel: SearchViewModel
 
     @Mock
@@ -37,15 +42,17 @@ class SearchViewModelTest {
     @Before
     fun setUp() {
         MockitoAnnotations.openMocks(this)
-        searchViewModel = SearchViewModel(repository, ScheduleProviderStub())
+        searchViewModel = SearchViewModel(repository)
     }
 
     companion object {
         private const val SEARCH_QUERY = "some query"
         private const val ERROR_TEXT = "error"
         private const val ERROR_NULL_RESULT = "Search results or total count are null"
+        private const val EXCEPTION_TEXT = "Response is null or unsuccessful"
     }
 
+    //Rx
     @Test
     fun search_Test() {
         `when`(repository.searchGithub(SEARCH_QUERY)).thenReturn(
@@ -150,6 +157,126 @@ class SearchViewModelTest {
             assertEquals(value.error.message, error.message)
         } finally {
             liveData.removeObserver(observer)
+        }
+    }
+
+    //Coroutines
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun coroutines_SearchTest() {
+        testCoroutineRule.runBlockingTest {
+            `when`(repository.searchGithubAsync(SEARCH_QUERY)).thenReturn(
+                SearchResponse(1, listOf())
+            )
+            searchViewModel.searchGitHub(SEARCH_QUERY)
+            verify(repository, times(1)).searchGithubAsync(SEARCH_QUERY)
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun coroutines_ReturnValueIsNotNull() {
+        testCoroutineRule.runBlockingTest {
+            val observer = Observer<ScreenState> {}
+            val liveData = searchViewModel.subscribeToLiveData()
+            `when`(repository.searchGithubAsync(SEARCH_QUERY)).thenReturn(
+                SearchResponse(1, listOf())
+            )
+            try {
+                liveData.observeForever(observer)
+                searchViewModel.searchGitHub(SEARCH_QUERY)
+                assertNotNull(liveData.value)
+            } finally {
+                liveData.removeObserver(observer)
+            }
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun coroutines_ReturnValueIsError() {
+        testCoroutineRule.runBlockingTest {
+            val observer = Observer<ScreenState> {}
+            val liveData = searchViewModel.subscribeToLiveData()
+            val error = Throwable(ERROR_NULL_RESULT)
+
+            `when`(repository.searchGithubAsync(SEARCH_QUERY)).thenReturn(
+                SearchResponse(null, listOf())
+            )
+            try {
+                liveData.observeForever(observer)
+                searchViewModel.searchGitHub(SEARCH_QUERY)
+                val value: ScreenState.Error = liveData.value as ScreenState.Error
+                assertEquals(value.error.message, error.message)
+            } finally {
+                liveData.removeObserver(observer)
+            }
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun coroutines_TestException() {
+        testCoroutineRule.runBlockingTest {
+            val observer = Observer<ScreenState> {}
+            val liveData = searchViewModel.subscribeToLiveData()
+            try {
+                liveData.observeForever(observer)
+                searchViewModel.searchGitHub(SEARCH_QUERY)
+                val value: ScreenState.Error = liveData.value as ScreenState.Error
+                assertEquals(value.error.message, EXCEPTION_TEXT)
+            } finally {
+                liveData.removeObserver(observer)
+            }
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun coroutines_IsLoading() {
+        testCoroutineRule.runBlockingTest {
+            var state: ScreenState? = null
+            val observer = Observer<ScreenState> {
+                if (it == ScreenState.Loading) {
+                    state = it
+                }
+            }
+            val liveData = searchViewModel.subscribeToLiveData()
+
+            `when`(repository.searchGithubAsync(SEARCH_QUERY)).thenReturn(
+                SearchResponse(1, listOf())
+            )
+            try {
+                liveData.observeForever(observer)
+                val loading = ScreenState.Loading
+                searchViewModel.searchGitHub(SEARCH_QUERY)
+
+                assertEquals(loading, state)
+
+            } finally {
+                liveData.removeObserver(observer)
+            }
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun coroutines_ResultIsNull() {
+        testCoroutineRule.runBlockingTest {
+            val observer = Observer<ScreenState> {}
+            val liveData = searchViewModel.subscribeToLiveData()
+            `when`(repository.searchGithubAsync(SEARCH_QUERY)).thenReturn(
+                    SearchResponse(1, null)
+            )
+            try {
+                liveData.observeForever(observer)
+                searchViewModel.searchGitHub(SEARCH_QUERY)
+                val error = Throwable(ERROR_NULL_RESULT)
+                val value: ScreenState.Error = liveData.value as ScreenState.Error
+                assertEquals(value.error.message, error.message)
+            } finally {
+                liveData.removeObserver(observer)
+            }
         }
     }
 }
