@@ -5,47 +5,45 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.geekbrains.tests.model.SearchResponse
 import com.geekbrains.tests.presenter.RepositoryContract
-import com.geekbrains.tests.utils.SchedulerProvider
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.observers.DisposableObserver
+import kotlinx.coroutines.*
 
-class SearchViewModel internal constructor(
-    private val repository: RepositoryContract,
-    private val schedulerProvider: SchedulerProvider
-) : ViewModel() {
+class SearchViewModel internal constructor(private val repository: RepositoryContract) :
+    ViewModel() {
     private val _liveData = MutableLiveData<ScreenState>()
     fun subscribeToLiveData(): LiveData<ScreenState> = _liveData
+    private val scope = CoroutineScope(
+        Dispatchers.Main
+                + SupervisorJob()
+                + CoroutineExceptionHandler { _, throwable ->
+            handleError(throwable)
+        }
+    )
+
     fun searchGitHub(searchQuery: String) {
-        val compositeDisposable = CompositeDisposable()
-        compositeDisposable.add(
-            repository.searchGithub(searchQuery)
-                .subscribeOn(schedulerProvider.background())
-                .observeOn(schedulerProvider.ui())
-                .doOnSubscribe { _liveData.value = ScreenState.Loading }
-                .subscribeWith(object : DisposableObserver<SearchResponse>() {
-                    override fun onNext(t: SearchResponse) {
-                        val searchResults = t.searchResults
-                        val totalCount = t.totalCount
-                        if (searchResults != null && totalCount != null) {
-                            _liveData.value = ScreenState.Working(t)
-                        } else {
-                            _liveData.value =
-                                ScreenState.Error(
-                                    Throwable("Search results or total count are null")
-                                )
-                        }
-                    }
+        _liveData.value = ScreenState.Loading
+        scope.launch {
+            val searchResponse = repository.searchGithubAsync(searchQuery)
+            val searchResults = searchResponse.searchResults
+            val totalCount = searchResponse.totalCount
+            if (searchResults != null && totalCount != null) {
+                _liveData.value = ScreenState.Working(searchResponse)
+            } else {
+                _liveData.value = ScreenState.Error(
+                    Throwable("Search results or total count are null")
+                )
+            }
+        }
+    }
 
-                    override fun onError(e: Throwable) {
-                        _liveData.value = ScreenState.Error(
-                            Throwable(e.message ?: "Response is null or unsuccessful")
-                        )
-                    }
-
-                    override fun onComplete() {
-                    }
-                })
+    private fun handleError(error: Throwable) {
+        _liveData.value = ScreenState.Error(
+            Throwable(error.message ?: "Response is null or unsuccessful")
         )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        scope.cancel()
     }
 }
 

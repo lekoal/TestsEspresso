@@ -6,6 +6,7 @@ import com.geekbrains.tests.repository.GitHubRepository
 import com.geekbrains.tests.utils.SchedulerProvider
 import com.geekbrains.tests.viewmodel.search.SearchSchedulerProvider
 import com.geekbrains.tests.viewmodel.search.SearchViewModel
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -18,7 +19,7 @@ val repoModule = module {
     single<Retrofit> {
         Retrofit.Builder()
             .baseUrl(get<String>(named("api_url")))
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
@@ -30,7 +31,6 @@ val repoModule = module {
     }
     single<SchedulerProvider>(named("scheduler_provider")) { SearchSchedulerProvider() }
     viewModel {
-        SearchViewModel(get(named("real_repo")),
-            get(named("scheduler_provider")))
+        SearchViewModel(get(named("real_repo")))
     }
 }

@@ -9,7 +9,12 @@ internal interface RepositoryContract {
         query: String,
         callback: RepositoryCallback
     )
+
     fun searchGithub(
         query: String
     ): Observable<SearchResponse>
+
+    suspend fun searchGithubAsync(
+        query: String
+    ): SearchResponse
 }
