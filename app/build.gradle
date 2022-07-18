@@ -55,6 +55,10 @@ android {
         }
     }
 
+    buildFeatures {
+        viewBinding true
+    }
+
     sourceSets {
         main { java.srcDirs = ['src/main/java'] }
         test { java.srcDirs = ['src/test/java'] }
@@ -100,4 +104,10 @@ dependencies {
 
     //UI Automator
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
+
+    //Fragment testing
+    debugImplementation 'androidx.fragment:fragment-testing:1.5.0'
+
+    //RecyclerView testing
+    debugImplementation 'androidx.test.espresso:espresso-contrib:3.4.0'
 }

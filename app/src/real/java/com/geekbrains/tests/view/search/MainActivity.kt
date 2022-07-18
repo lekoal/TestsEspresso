@@ -9,7 +9,7 @@ import com.geekbrains.tests.model.SearchResult
 import com.geekbrains.tests.presenter.RepositoryContract
 import com.geekbrains.tests.presenter.search.PresenterSearchContract
 import com.geekbrains.tests.presenter.search.SearchPresenter
-import com.geekbrains.tests.view.details.DetailsActivity
+import com.geekbrains.tests.view.details.DetailsFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
@@ -30,7 +30,12 @@ class MainActivity : AppCompatActivity(), ViewSearchContract {
 
     private fun setUI() {
         toDetailsActivityButton.setOnClickListener {
-            startActivity(DetailsActivity.getIntent(this, totalCount))
+            supportFragmentManager
+                .beginTransaction()
+                .addToBackStack(null)
+                .replace(mainContainer.id,
+                DetailsFragment.newInstance(totalCount))
+                .commit()
         }
         setQueryListener()
         setRecyclerView()
